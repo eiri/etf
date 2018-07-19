@@ -19,11 +19,19 @@ endef
 
 
 .PHONY: all
-all: test
+all: deps test build
+
+.PHONY: deps
+deps:
+	go get -t ./...
 
 .PHONY: test
 test:
 	go test -v ./...
+
+.PHONY: build
+build:
+	go build -v
 
 .PHONY: clean
 clean:
