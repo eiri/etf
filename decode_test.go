@@ -13,3 +13,59 @@
 // limitations under the License.
 
 package etf
+
+import (
+	"os"
+	"testing"
+)
+
+// TestDecodeInt8 to make sure we can decode into int8
+func TestDecodeInt8(t *testing.T) {
+	r, err := os.Open("testdata/int8.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	var v int
+	err = NewDecoder(r).Decode(&v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != 42 {
+		t.Fatalf("Expecting 42, got %v", v)
+	}
+}
+
+// TestDecodeInt32 to make sure we can decode into int32
+func TestDecodeInt32(t *testing.T) {
+	r, err := os.Open("testdata/int32.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	var v int
+	err = NewDecoder(r).Decode(&v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != 523124044 {
+		t.Fatalf("Expecting 523124044, got %v", v)
+	}
+}
+
+// TestDecodeNegInt32 to make sure we can decode into negative int32
+func TestDecodeNegInt32(t *testing.T) {
+	r, err := os.Open("testdata/negint32.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	var v int
+	err = NewDecoder(r).Decode(&v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != -432517103 {
+		t.Fatalf("Expecting -432517103, got %v", v)
+	}
+}
