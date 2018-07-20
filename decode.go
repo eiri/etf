@@ -55,10 +55,7 @@ func (d *Decoder) Decode(v interface{}) error {
 	}
 	// read based on tag
 	switch probe[1] {
-	case 97:
-		err := d.decodeToSmallInt(rv)
-		return err
-	case 98:
+	case 97, 98:
 		err := d.decodeToInt(rv)
 		return err
 	case 70:
@@ -69,34 +66,30 @@ func (d *Decoder) Decode(v interface{}) error {
 	}
 }
 
-func (d *Decoder) decodeToSmallInt(rv reflect.Value) error {
-	if rv.Type().Kind() != reflect.Int {
-		return errors.New("invalid type")
-	}
-	var buf [1]byte
-	if _, err := io.ReadFull(d, buf[:]); err != nil {
-		return err
-	}
-	val := int64(buf[0])
-	rv.SetInt(val)
-	return nil
-}
-
 func (d *Decoder) decodeToInt(rv reflect.Value) error {
 	if rv.Type().Kind() != reflect.Int {
 		return errors.New("invalid type")
 	}
-	var buf [4]byte
-	if _, err := io.ReadFull(d, buf[:]); err != nil {
-		return err
-	}
-	var i int32
-	bbuf := bytes.NewReader(buf[:])
-	err := binary.Read(bbuf, binary.BigEndian, &i)
+	buf := make([]byte, 4)
+	n, err := d.Read(buf)
 	if err != nil {
 		return err
 	}
-	val := int64(i)
+	var val int64
+	switch n {
+	case 1:
+		val = int64(buf[0])
+	case 4:
+		var i int32
+		bbuf := bytes.NewReader(buf)
+		err := binary.Read(bbuf, binary.BigEndian, &i)
+		if err != nil {
+			return err
+		}
+		val = int64(i)
+	default:
+		return errors.New("bad argument")
+	}
 	rv.SetInt(val)
 	return nil
 }
