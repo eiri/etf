@@ -69,3 +69,20 @@ func TestDecodeNegInt32(t *testing.T) {
 		t.Fatalf("Expecting -42, got %v", v)
 	}
 }
+
+// TestFloat64 to make sure we can decode into float
+func TestFloat64(t *testing.T) {
+	r, err := os.Open("testdata/float.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	var v float64
+	err = NewDecoder(r).Decode(&v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != 3.14159 {
+		t.Fatalf("Expecting 3.14159, got %v", v)
+	}
+}

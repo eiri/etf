@@ -61,6 +61,9 @@ func (d *Decoder) Decode(v interface{}) error {
 	case 98:
 		err := d.decodeToInt32(rv)
 		return err
+	case 70:
+		err := d.decodeToFloat64(rv)
+		return err
 	default:
 		return errors.New("unknown tag")
 	}
@@ -92,5 +95,23 @@ func (d *Decoder) decodeToInt32(rv reflect.Value) error {
 	binary.Read(bbuf, binary.BigEndian, &i)
 	val := int(i)
 	rv.Set(reflect.ValueOf(val))
+	return nil
+}
+
+func (d *Decoder) decodeToFloat64(rv reflect.Value) error {
+	if rv.Type().Kind() != reflect.Float64 {
+		return errors.New("invalid type")
+	}
+	var buf [8]byte
+	if _, err := io.ReadFull(d, buf[:]); err != nil {
+		return err
+	}
+	var f float64
+	bbuf := bytes.NewReader(buf[:])
+	err := binary.Read(bbuf, binary.BigEndian, &f)
+	if err != nil {
+		return err
+	}
+	rv.SetFloat(f)
 	return nil
 }

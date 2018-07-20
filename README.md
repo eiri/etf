@@ -6,6 +6,8 @@ Package etf implements encoding and decoding of Erlang's External Term Format
 ## Type mapping
 
 Erlang            | Tag | Go
------------------ | --- | -----
-SMALL_INTEGER_EXT |  97 | uint8
-INTEGER_EXT       |  98 | int32
+----------------- | --- | -------
+SMALL_INTEGER_EXT |  97 | int
+INTEGER_EXT       |  98 | int
+FLOAT_EXT         |  99 | ---
+NEW_FLOAT_EXT     |  70 | float64
