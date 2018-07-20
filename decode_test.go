@@ -19,8 +19,8 @@ import (
 	"testing"
 )
 
-// TestDecodeUint8 to make sure we can decode into int8
-func TestDecodeUint8(t *testing.T) {
+// TestDecodeSmallInt to make sure we can decode into int8
+func TestDecodeSmallInt(t *testing.T) {
 	r, err := os.Open("testdata/uint8.bin")
 	if err != nil {
 		t.Fatal(err)
@@ -36,8 +36,8 @@ func TestDecodeUint8(t *testing.T) {
 	}
 }
 
-// TestDecodeInt32 to make sure we can decode into int32
-func TestDecodeInt32(t *testing.T) {
+// TestDecodeInt to make sure we can decode into int32
+func TestDecodeInt(t *testing.T) {
 	r, err := os.Open("testdata/int32.bin")
 	if err != nil {
 		t.Fatal(err)
@@ -53,8 +53,8 @@ func TestDecodeInt32(t *testing.T) {
 	}
 }
 
-// TestDecodeNegInt32 to make sure we can decode into negative int32
-func TestDecodeNegInt32(t *testing.T) {
+// TestDecodeNegInt to make sure we can decode into negative int32
+func TestDecodeNegInt(t *testing.T) {
 	r, err := os.Open("testdata/negint32.bin")
 	if err != nil {
 		t.Fatal(err)
