@@ -119,7 +119,7 @@ func (d *Decoder) decodeToFloat64(rv reflect.Value) error {
 }
 
 func (d *Decoder) decodeToAtom(rv reflect.Value) error {
-	if rv.Type().Kind() != reflect.String {
+	if rv.Type().Kind() != reflect.String && rv.Type().Kind() != reflect.Bool {
 		return errors.New("invalid type")
 	}
 	lnBuf := make([]byte, 2)
@@ -132,7 +132,15 @@ func (d *Decoder) decodeToAtom(rv reflect.Value) error {
 		return err
 	}
 	val := string(buf)
-	rv.SetString(val)
+	if rv.Type().Kind() == reflect.Bool && val == "true" {
+		rv.SetBool(true)
+	} else if rv.Type().Kind() == reflect.Bool && val == "false" {
+		rv.SetBool(false)
+	} else if rv.Type().Kind() == reflect.String {
+		rv.SetString(val)
+	} else {
+		return errors.New("invalid type")
+	}
 	return nil
 }
 

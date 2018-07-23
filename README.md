@@ -12,6 +12,6 @@ INTEGER_EXT         |  98 | int
 FLOAT_EXT           |  99 | ---
 NEW_FLOAT_EXT       |  70 | float64
 SMALL_ATOM_EXT      | 115 | ---
-ATOM_EXT            | 100 | string
+ATOM_EXT            | 100 | string or bool
 SMALL_ATOM_UTF8_EXT | 119 | string
 ATOM_UTF8_EXT       | 118 | string

@@ -139,3 +139,37 @@ func TestDecodeSmallUTF8Atom(t *testing.T) {
 		t.Fatalf("Expecting \"猫\", got %v", v)
 	}
 }
+
+// TestDecodeBoolTrue to make sure we can decode boolean true
+func TestDecodeBoolTrue(t *testing.T) {
+	r, err := os.Open("testdata/booltrue.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	var v bool
+	err = NewDecoder(r).Decode(&v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !v {
+		t.Fatalf("Expecting true, got %v", v)
+	}
+}
+
+// TestDecodeBoolFalse to make sure we can decode boolean false
+func TestDecodeBoolFalse(t *testing.T) {
+	r, err := os.Open("testdata/boolfalse.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	var v bool
+	err = NewDecoder(r).Decode(&v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v {
+		t.Fatalf("Expecting false, got %v", v)
+	}
+}
