@@ -16,10 +16,11 @@ package etf
 
 import (
 	"os"
+	"strings"
 	"testing"
 )
 
-// TestDecodeSmallInt to make sure we can decode into int8
+// TestDecodeSmallInt to make sure we can decode uint8
 func TestDecodeSmallInt(t *testing.T) {
 	r, err := os.Open("testdata/uint8.bin")
 	if err != nil {
@@ -36,7 +37,7 @@ func TestDecodeSmallInt(t *testing.T) {
 	}
 }
 
-// TestDecodeInt to make sure we can decode into int32
+// TestDecodeInt to make sure we can decode int32
 func TestDecodeInt(t *testing.T) {
 	r, err := os.Open("testdata/int32.bin")
 	if err != nil {
@@ -53,7 +54,7 @@ func TestDecodeInt(t *testing.T) {
 	}
 }
 
-// TestDecodeNegInt to make sure we can decode into negative int32
+// TestDecodeNegInt to make sure we can decode negative int32
 func TestDecodeNegInt(t *testing.T) {
 	r, err := os.Open("testdata/negint32.bin")
 	if err != nil {
@@ -70,8 +71,8 @@ func TestDecodeNegInt(t *testing.T) {
 	}
 }
 
-// TestFloat64 to make sure we can decode into float
-func TestFloat64(t *testing.T) {
+// TestDecodeFloat64 to make sure we can decode float
+func TestDecodeFloat64(t *testing.T) {
 	r, err := os.Open("testdata/float.bin")
 	if err != nil {
 		t.Fatal(err)
@@ -84,5 +85,40 @@ func TestFloat64(t *testing.T) {
 	}
 	if v != 3.14159 {
 		t.Fatalf("Expecting 3.14159, got %v", v)
+	}
+}
+
+// TestDecodeAtom to make sure we can decode atom
+func TestDecodeAtom(t *testing.T) {
+	r, err := os.Open("testdata/atom.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	var v string
+	err = NewDecoder(r).Decode(&v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != "cat" {
+		t.Fatalf("Expecting \"cat\", got %v", v)
+	}
+}
+
+// TestDecodeUTF8Atom to make sure we can decode UTF8 encoded atom
+func TestDecodeUTF8Atom(t *testing.T) {
+	r, err := os.Open("testdata/atomutf8.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	var v string
+	err = NewDecoder(r).Decode(&v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expect := strings.Repeat("😀", 64)
+	if v != expect {
+		t.Fatalf("Expecting \"%s\", got %v", expect, v)
 	}
 }

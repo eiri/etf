@@ -46,8 +46,8 @@ func (d *Decoder) Decode(v interface{}) error {
 		return errors.New("not a pointer")
 	}
 	// grep header and tag
-	var probe [2]byte
-	if _, err := io.ReadFull(d, probe[:]); err != nil {
+	probe := make([]byte, 2)
+	if _, err := io.ReadFull(d, probe); err != nil {
 		return err
 	}
 	if probe[0] != 131 {
@@ -57,6 +57,9 @@ func (d *Decoder) Decode(v interface{}) error {
 	switch probe[1] {
 	case 97, 98:
 		err := d.decodeToInt(rv)
+		return err
+	case 100, 118:
+		err := d.decodeToAtom(rv)
 		return err
 	case 70:
 		err := d.decodeToFloat64(rv)
@@ -98,16 +101,34 @@ func (d *Decoder) decodeToFloat64(rv reflect.Value) error {
 	if rv.Type().Kind() != reflect.Float64 {
 		return errors.New("invalid type")
 	}
-	var buf [8]byte
-	if _, err := io.ReadFull(d, buf[:]); err != nil {
+	buf := make([]byte, 8)
+	if _, err := io.ReadFull(d, buf); err != nil {
 		return err
 	}
 	var f float64
-	bbuf := bytes.NewReader(buf[:])
+	bbuf := bytes.NewReader(buf)
 	err := binary.Read(bbuf, binary.BigEndian, &f)
 	if err != nil {
 		return err
 	}
 	rv.SetFloat(f)
+	return nil
+}
+
+func (d *Decoder) decodeToAtom(rv reflect.Value) error {
+	if rv.Type().Kind() != reflect.String {
+		return errors.New("invalid type")
+	}
+	lnBuf := make([]byte, 2)
+	if _, err := io.ReadFull(d, lnBuf); err != nil {
+		return err
+	}
+	ln := binary.BigEndian.Uint16(lnBuf)
+	buf := make([]byte, ln)
+	if _, err := io.ReadFull(d, buf); err != nil {
+		return err
+	}
+	val := string(buf)
+	rv.SetString(val)
 	return nil
 }
