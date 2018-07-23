@@ -61,6 +61,9 @@ func (d *Decoder) Decode(v interface{}) error {
 	case 100, 118:
 		err := d.decodeToAtom(rv)
 		return err
+	case 119:
+		err := d.decodeToSmallAtom(rv)
+		return err
 	case 70:
 		err := d.decodeToFloat64(rv)
 		return err
@@ -125,6 +128,23 @@ func (d *Decoder) decodeToAtom(rv reflect.Value) error {
 	}
 	ln := binary.BigEndian.Uint16(lnBuf)
 	buf := make([]byte, ln)
+	if _, err := io.ReadFull(d, buf); err != nil {
+		return err
+	}
+	val := string(buf)
+	rv.SetString(val)
+	return nil
+}
+
+func (d *Decoder) decodeToSmallAtom(rv reflect.Value) error {
+	if rv.Type().Kind() != reflect.String {
+		return errors.New("invalid type")
+	}
+	var ln [1]byte
+	if _, err := io.ReadFull(d, ln[:]); err != nil {
+		return err
+	}
+	buf := make([]byte, ln[0])
 	if _, err := io.ReadFull(d, buf); err != nil {
 		return err
 	}

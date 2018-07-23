@@ -122,3 +122,20 @@ func TestDecodeUTF8Atom(t *testing.T) {
 		t.Fatalf("Expecting \"%s\", got %v", expect, v)
 	}
 }
+
+// TestDecodeSmallUTF8Atom to make sure we can decode UTF8 encoded atom
+func TestDecodeSmallUTF8Atom(t *testing.T) {
+	r, err := os.Open("testdata/smallatomutf8.bin")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+	var v string
+	err = NewDecoder(r).Decode(&v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if v != "猫" {
+		t.Fatalf("Expecting \"猫\", got %v", v)
+	}
+}
