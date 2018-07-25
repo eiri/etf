@@ -70,7 +70,7 @@ var tests = []decoderTest{
 // TestDecode to make sure we cover all types decoding
 func TestDecode(t *testing.T) {
 	for _, tt := range tests {
-		path := filepath.Join("testdata", tt.name+".bin")
+		path := filepath.Join("testdata", tt.name+".golden")
 		r, err := os.Open(path)
 		if err != nil {
 			t.Fatal(err)
