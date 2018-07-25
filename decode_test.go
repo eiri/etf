@@ -22,9 +22,11 @@ import (
 	"testing"
 )
 
-type decoderTest func(*Decoder) (interface{}, error)
+type any interface{}
 
-func testDecode(fn string, dt decoderTest, expect interface{}) error {
+type decoderTest func(*Decoder) (any, error)
+
+func testDecode(fn string, dt decoderTest, expect any) error {
 	path := filepath.Join("testdata", fn+".bin")
 	r, err := os.Open(path)
 	if err != nil {
@@ -41,7 +43,7 @@ func testDecode(fn string, dt decoderTest, expect interface{}) error {
 
 // TestDecodeSmallInt to make sure we can decode uint8
 func TestDecodeSmallInt(t *testing.T) {
-	dt := func(d *Decoder) (interface{}, error) {
+	dt := func(d *Decoder) (any, error) {
 		var v int
 		err := d.Decode(&v)
 		return v, err
@@ -54,7 +56,7 @@ func TestDecodeSmallInt(t *testing.T) {
 
 // TestDecodeInt to make sure we can decode int32
 func TestDecodeInt(t *testing.T) {
-	dt := func(d *Decoder) (interface{}, error) {
+	dt := func(d *Decoder) (any, error) {
 		var v int
 		err := d.Decode(&v)
 		return v, err
@@ -67,7 +69,7 @@ func TestDecodeInt(t *testing.T) {
 
 // TestDecodeNegInt to make sure we can decode negative int32
 func TestDecodeNegInt(t *testing.T) {
-	dt := func(d *Decoder) (interface{}, error) {
+	dt := func(d *Decoder) (any, error) {
 		var v int
 		err := d.Decode(&v)
 		return v, err
@@ -80,7 +82,7 @@ func TestDecodeNegInt(t *testing.T) {
 
 // TestDecodeFloat64 to make sure we can decode float
 func TestDecodeFloat64(t *testing.T) {
-	dt := func(d *Decoder) (interface{}, error) {
+	dt := func(d *Decoder) (any, error) {
 		var v float64
 		err := d.Decode(&v)
 		return v, err
@@ -93,7 +95,7 @@ func TestDecodeFloat64(t *testing.T) {
 
 // TestDecodeAtom to make sure we can decode atom
 func TestDecodeAtom(t *testing.T) {
-	dt := func(d *Decoder) (interface{}, error) {
+	dt := func(d *Decoder) (any, error) {
 		var v string
 		err := d.Decode(&v)
 		return v, err
@@ -106,7 +108,7 @@ func TestDecodeAtom(t *testing.T) {
 
 // TestDecodeUTF8Atom to make sure we can decode UTF8 encoded atom
 func TestDecodeUTF8Atom(t *testing.T) {
-	dt := func(d *Decoder) (interface{}, error) {
+	dt := func(d *Decoder) (any, error) {
 		var v string
 		err := d.Decode(&v)
 		return v, err
@@ -120,7 +122,7 @@ func TestDecodeUTF8Atom(t *testing.T) {
 
 // TestDecodeSmallUTF8Atom to make sure we can decode UTF8 encoded atom
 func TestDecodeSmallUTF8Atom(t *testing.T) {
-	dt := func(d *Decoder) (interface{}, error) {
+	dt := func(d *Decoder) (any, error) {
 		var v string
 		err := d.Decode(&v)
 		return v, err
@@ -133,7 +135,7 @@ func TestDecodeSmallUTF8Atom(t *testing.T) {
 
 // TestDecodeBoolTrue to make sure we can decode boolean true
 func TestDecodeBoolTrue(t *testing.T) {
-	dt := func(d *Decoder) (interface{}, error) {
+	dt := func(d *Decoder) (any, error) {
 		var v bool
 		err := d.Decode(&v)
 		return v, err
@@ -146,7 +148,7 @@ func TestDecodeBoolTrue(t *testing.T) {
 
 // TestDecodeBoolFalse to make sure we can decode boolean false
 func TestDecodeBoolFalse(t *testing.T) {
-	dt := func(d *Decoder) (interface{}, error) {
+	dt := func(d *Decoder) (any, error) {
 		var v bool
 		err := d.Decode(&v)
 		return v, err
