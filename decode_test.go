@@ -78,7 +78,9 @@ func TestDecode(t *testing.T) {
 		d := NewDecoder(r)
 		v, err := tt.decode(d)
 		r.Close()
-		if err == nil && v != tt.expect {
+		if err != nil {
+			t.Fatal(err)
+		} else if v != tt.expect {
 			t.Fatalf("Expecting %#v, got %#v", tt.expect, v)
 		}
 	}
