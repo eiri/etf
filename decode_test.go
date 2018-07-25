@@ -15,161 +15,144 @@
 package etf
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
 
-// TestDecodeSmallInt to make sure we can decode uint8
-func TestDecodeSmallInt(t *testing.T) {
-	r, err := os.Open("testdata/uint8.bin")
+type decoderTest func(*Decoder) (interface{}, error)
+
+func testDecode(fn string, dt decoderTest, expect interface{}) error {
+	path := filepath.Join("testdata", fn+".bin")
+	r, err := os.Open(path)
 	if err != nil {
-		t.Fatal(err)
+		return err
 	}
 	defer r.Close()
-	var v int
-	err = NewDecoder(r).Decode(&v)
+	d := NewDecoder(r)
+	v, err := dt(d)
+	if err == nil && v != expect {
+		err = fmt.Errorf("Expecting %#v, got %#v", expect, v)
+	}
+	return err
+}
+
+// TestDecodeSmallInt to make sure we can decode uint8
+func TestDecodeSmallInt(t *testing.T) {
+	dt := func(d *Decoder) (interface{}, error) {
+		var v int
+		err := d.Decode(&v)
+		return v, err
+	}
+	err := testDecode("uint8", dt, 42)
 	if err != nil {
 		t.Fatal(err)
-	}
-	if v != 42 {
-		t.Fatalf("Expecting 42, got %v", v)
 	}
 }
 
 // TestDecodeInt to make sure we can decode int32
 func TestDecodeInt(t *testing.T) {
-	r, err := os.Open("testdata/int32.bin")
+	dt := func(d *Decoder) (interface{}, error) {
+		var v int
+		err := d.Decode(&v)
+		return v, err
+	}
+	err := testDecode("int32", dt, 523124044)
 	if err != nil {
 		t.Fatal(err)
-	}
-	defer r.Close()
-	var v int
-	err = NewDecoder(r).Decode(&v)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if v != 523124044 {
-		t.Fatalf("Expecting 523124044, got %v", v)
 	}
 }
 
 // TestDecodeNegInt to make sure we can decode negative int32
 func TestDecodeNegInt(t *testing.T) {
-	r, err := os.Open("testdata/negint32.bin")
+	dt := func(d *Decoder) (interface{}, error) {
+		var v int
+		err := d.Decode(&v)
+		return v, err
+	}
+	err := testDecode("negint32", dt, -42)
 	if err != nil {
 		t.Fatal(err)
-	}
-	defer r.Close()
-	var v int
-	err = NewDecoder(r).Decode(&v)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if v != -42 {
-		t.Fatalf("Expecting -42, got %v", v)
 	}
 }
 
 // TestDecodeFloat64 to make sure we can decode float
 func TestDecodeFloat64(t *testing.T) {
-	r, err := os.Open("testdata/float.bin")
+	dt := func(d *Decoder) (interface{}, error) {
+		var v float64
+		err := d.Decode(&v)
+		return v, err
+	}
+	err := testDecode("float", dt, 3.14159)
 	if err != nil {
 		t.Fatal(err)
-	}
-	defer r.Close()
-	var v float64
-	err = NewDecoder(r).Decode(&v)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if v != 3.14159 {
-		t.Fatalf("Expecting 3.14159, got %v", v)
 	}
 }
 
 // TestDecodeAtom to make sure we can decode atom
 func TestDecodeAtom(t *testing.T) {
-	r, err := os.Open("testdata/atom.bin")
+	dt := func(d *Decoder) (interface{}, error) {
+		var v string
+		err := d.Decode(&v)
+		return v, err
+	}
+	err := testDecode("atom", dt, "cat")
 	if err != nil {
 		t.Fatal(err)
-	}
-	defer r.Close()
-	var v string
-	err = NewDecoder(r).Decode(&v)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if v != "cat" {
-		t.Fatalf("Expecting \"cat\", got %v", v)
 	}
 }
 
 // TestDecodeUTF8Atom to make sure we can decode UTF8 encoded atom
 func TestDecodeUTF8Atom(t *testing.T) {
-	r, err := os.Open("testdata/atomutf8.bin")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer r.Close()
-	var v string
-	err = NewDecoder(r).Decode(&v)
-	if err != nil {
-		t.Fatal(err)
+	dt := func(d *Decoder) (interface{}, error) {
+		var v string
+		err := d.Decode(&v)
+		return v, err
 	}
 	expect := strings.Repeat("😀", 64)
-	if v != expect {
-		t.Fatalf("Expecting \"%s\", got %v", expect, v)
+	err := testDecode("atomutf8", dt, expect)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
 // TestDecodeSmallUTF8Atom to make sure we can decode UTF8 encoded atom
 func TestDecodeSmallUTF8Atom(t *testing.T) {
-	r, err := os.Open("testdata/smallatomutf8.bin")
+	dt := func(d *Decoder) (interface{}, error) {
+		var v string
+		err := d.Decode(&v)
+		return v, err
+	}
+	err := testDecode("smallatomutf8", dt, "猫")
 	if err != nil {
 		t.Fatal(err)
-	}
-	defer r.Close()
-	var v string
-	err = NewDecoder(r).Decode(&v)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if v != "猫" {
-		t.Fatalf("Expecting \"猫\", got %v", v)
 	}
 }
 
 // TestDecodeBoolTrue to make sure we can decode boolean true
 func TestDecodeBoolTrue(t *testing.T) {
-	r, err := os.Open("testdata/booltrue.bin")
+	dt := func(d *Decoder) (interface{}, error) {
+		var v bool
+		err := d.Decode(&v)
+		return v, err
+	}
+	err := testDecode("booltrue", dt, true)
 	if err != nil {
 		t.Fatal(err)
-	}
-	defer r.Close()
-	var v bool
-	err = NewDecoder(r).Decode(&v)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !v {
-		t.Fatalf("Expecting true, got %v", v)
 	}
 }
 
 // TestDecodeBoolFalse to make sure we can decode boolean false
 func TestDecodeBoolFalse(t *testing.T) {
-	r, err := os.Open("testdata/boolfalse.bin")
+	dt := func(d *Decoder) (interface{}, error) {
+		var v bool
+		err := d.Decode(&v)
+		return v, err
+	}
+	err := testDecode("boolfalse", dt, false)
 	if err != nil {
 		t.Fatal(err)
-	}
-	defer r.Close()
-	var v bool
-	err = NewDecoder(r).Decode(&v)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if v {
-		t.Fatalf("Expecting false, got %v", v)
 	}
 }
