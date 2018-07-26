@@ -67,6 +67,9 @@ func (d *Decoder) Decode(v interface{}) error {
 	case 70:
 		err := d.decodeToFloat64(rv)
 		return err
+	case 109:
+		err := d.decodeToBinary(rv)
+		return err
 	default:
 		return errors.New("unknown tag")
 	}
@@ -158,5 +161,24 @@ func (d *Decoder) decodeToSmallAtom(rv reflect.Value) error {
 	}
 	val := string(buf)
 	rv.SetString(val)
+	return nil
+}
+
+func (d *Decoder) decodeToBinary(rv reflect.Value) error {
+	if rv.Type().Kind() != reflect.Slice {
+		return errors.New("invalid type")
+	} else if rv.Type().Elem().Kind() != reflect.Uint8 {
+		return errors.New("invalid type")
+	}
+	lnBuf := make([]byte, 4)
+	if _, err := io.ReadFull(d, lnBuf); err != nil {
+		return err
+	}
+	ln := binary.BigEndian.Uint32(lnBuf)
+	val := make([]byte, ln)
+	if _, err := io.ReadFull(d, val); err != nil {
+		return err
+	}
+	rv.SetBytes(val)
 	return nil
 }

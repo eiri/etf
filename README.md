@@ -15,3 +15,4 @@ SMALL_ATOM_EXT      | 115 | ---
 ATOM_EXT            | 100 | string or bool
 SMALL_ATOM_UTF8_EXT | 119 | string
 ATOM_UTF8_EXT       | 118 | string
+BINARY_EXT          | 109 | []byte

@@ -17,6 +17,7 @@ package etf
 import (
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -55,6 +56,12 @@ var decodeBool = func(d *Decoder) (any, error) {
 	return v, err
 }
 
+var decodeBytes = func(d *Decoder) (any, error) {
+	var v []byte
+	err := d.Decode(&v)
+	return v, err
+}
+
 var tests = []decoderTest{
 	{"uint8", decodeInt, 42},
 	{"int32", decodeInt, 523124044},
@@ -65,6 +72,7 @@ var tests = []decoderTest{
 	{"smallatomutf8", decodeString, "猫"},
 	{"booltrue", decodeBool, true},
 	{"boolfalse", decodeBool, false},
+	{"binary", decodeBytes, []byte{23, 198, 181, 53, 145, 254, 7}},
 }
 
 // TestDecode to make sure we cover all types decoding
@@ -80,8 +88,12 @@ func TestDecode(t *testing.T) {
 		r.Close()
 		if err != nil {
 			t.Fatal(err)
-		} else if v != tt.expect {
+		}
+		if !reflect.DeepEqual(v, tt.expect) {
 			t.Fatalf("Expecting %#v, got %#v", tt.expect, v)
+		}
+		if testing.Verbose() {
+			t.Logf("%-16s - ok", tt.name)
 		}
 	}
 }
