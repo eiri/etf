@@ -1,5 +1,5 @@
 # etf
-[![Build Status](https://travis-ci.com/eiri/etf.svg?branch=master)](https://travis-ci.com/eiri/etf)
+[![Build Status](https://github.com/eiri/etf/workflows/build/badge.svg)](https://github.com/eiri/etf/actions)
 
 Package etf implements encoding and decoding of Erlang's External Term Format
 
